@@ -1,14 +1,29 @@
 # ISBN Book OCR
-Image to text recognition for ISBN numbers from books.
 
+This is an image to text recognition that focuses on ISBN numbers from books.
+
+It can return either ISBN-10 or ISBN-13 codes.
 
 ## Usage
 
-1. OCR Image Recognition
+To scan, you can call the scan.py script in the src folder:
+```shell
+python scan.py --path {Path to File}
+```
+
+1. To scan an image, you can run:
     ```shell
-    python scan.py
+    python scan.py --path images/test.png
+    ```
+2. To scan a folder of images, you can run:
+    ```shell
+    python scan.py --path images/
     ```
 
-# Output / Results
+## Authors
 
-Text results from the images and OCR are collected via the results folder or via a command line argument (designated folder)
+* **Jimmy Le** - [Jldevops](https://github.com/jldevops)
+
+## License
+
+Licensed under the [MIT License](LICENSE)
