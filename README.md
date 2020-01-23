@@ -6,7 +6,7 @@ Image to text recognition for ISBN numbers from books.
 
 1. OCR Image Recognition
     ```shell
-    python ocr.py
+    python scan.py
     ```
 
 # Output / Results
