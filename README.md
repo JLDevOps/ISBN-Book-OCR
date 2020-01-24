@@ -13,11 +13,11 @@ python scan.py --path {Path to File}
 
 1. To scan an image, you can run:
     ```shell
-    python scan.py --path images/test.png
+    python scan.py --path isbn_images/test.png
     ```
 2. To scan a folder of images, you can run:
     ```shell
-    python scan.py --path images/
+    python scan.py --path isbn_images/
     ```
 
 ## Authors

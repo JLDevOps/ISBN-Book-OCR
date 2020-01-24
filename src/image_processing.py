@@ -18,6 +18,7 @@ def remove_noise(image):
  
 #thresholding
 def thresholding(image):
+    # return cv2.threshold(image, 10, 255, cv2.THRESH_BINARY_INV)[1]
     return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
 def adaptiveThreshold(image):
