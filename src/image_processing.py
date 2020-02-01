@@ -22,11 +22,12 @@ def thresholding(image):
     return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
 def adaptiveThreshold(image):
-    img = cv2.imread(image)
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    ret, thresh = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
-    threshMean = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 10)
-    threshGauss = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 51, 27)
+    # gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    threshGauss = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
+    # ret, thresh = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+    # threshMean = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 10)
+    # threshGauss = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 51, 27)
     return threshGauss
 
 #dilation
@@ -66,8 +67,9 @@ def deskew(image):
 def match_template(image, template):
     return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED) 
 
-def rotate(image, center = None, scale = 1.0):
-    angle=360-int(re.search('(?<=Rotate: )\d+', pytesseract.image_to_osd(image)).group(0))
+def rotate(image, rotate_angle, center = None, scale = 1.0):
+    # initial_angle = int(re.search('(?<=Rotate: )\d+', pytesseract.image_to_osd(image)).group(0))
+    angle=360-rotate_angle
     (h, w) = image.shape[:2]
 
     if center is None:
