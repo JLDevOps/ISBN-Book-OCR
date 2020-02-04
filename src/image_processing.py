@@ -18,16 +18,10 @@ def remove_noise(image):
  
 #thresholding
 def thresholding(image):
-    # return cv2.threshold(image, 10, 255, cv2.THRESH_BINARY_INV)[1]
     return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
 def adaptiveThreshold(image):
-    # gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    threshGauss = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-
-    # ret, thresh = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
-    # threshMean = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 10)
-    # threshGauss = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 51, 27)
+    threshGauss = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 2)
     return threshGauss
 
 #dilation
@@ -76,6 +70,7 @@ def rotate(image, rotate_angle, center = None, scale = 1.0):
         center = (w / 2, h / 2)
 
     # Perform the rotation
+    print("angle is: " + str(angle))
     M = cv2.getRotationMatrix2D(center, angle, scale)
     rotated = cv2.warpAffine(image, M, (w, h))
 
