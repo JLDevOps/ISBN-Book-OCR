@@ -13,11 +13,20 @@ python scan.py --path {Path to File}
 
 1. To scan an image, you can run:
     ```shell
-    python scan.py --path isbn_images/test.png
+    python scan.py -p isbn_images/test.png
     ```
 2. To scan a folder of images, you can run:
     ```shell
-    python scan.py --path isbn_images/
+    python scan.py -p isbn_images/
+    ```
+3. You can check your ISBN results against an online source to make sure that it exists
+    ```shell
+    python scan.py -p isbn_images/ -o
+    ```
+    Note: Currently using AbeBooks as a checker.
+4. You can export the data as a csv file
+    ```shell
+    python scan.py -p isbn_images/ -o -v output.csv
     ```
 
 ## Authors
