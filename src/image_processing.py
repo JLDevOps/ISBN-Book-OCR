@@ -10,7 +10,8 @@ from pytesseract import Output
 
 # get grayscale image
 def get_grayscale(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.bitwise_not(gray)
 
 # noise removal
 def remove_noise(image):
