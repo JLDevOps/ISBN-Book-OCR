@@ -26,8 +26,10 @@ python scan.py --path {Path to File}
     Note: Currently using AbeBooks as a checker.
 4. You can export the data as a csv file
     ```shell
-    python scan.py -p isbn_images/ -o -v output.csv
+    python scan.py -p isbn_images/ -o -x output.csv
     ```
+
+Note: By default, script will output a csv file with the results.
 
 ## Authors
 
