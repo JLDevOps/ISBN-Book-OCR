@@ -134,6 +134,13 @@ temp/
 output*.txt
 *.csv
 
+# Image files and folders
+isbn_lib/
+test_files/
+*.png
+*.jpg
+*.tiff
+
 # VS Code
 .vscode/
 

@@ -18,39 +18,17 @@ import platform
 import pathlib
 import requests
 import csv
+import time
+from isbn import *
 
 # Global variables
 custom_config = r''
 online = False
 isbn_found = 0
 file_found = 0
-scan_list = []
 
 # PLT variables
 plt.figure(figsize=(16,12))
-
-def find_isbn(data):
-    regex_pattern = r'(ISBN[-:]*(1[03])*[ ]*(: ){0,1})*(([0-9Xx][- \'"]*){13}|([0-9Xx][- \'"]*){10})'
-    # regex_pattern = r'/((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/'
-    x = re.search(regex_pattern, data)
-
-    if x:
-        data = re.sub('[ISBN^(: )]+', '', x.group())
-        removed_dash = data.replace('-', '')
-        return removed_dash
-    else:
-        None
-
-def check_isbn(isbn):
-    # Using abebooks to do a search on the isbn
-    # This only works when there is internet
-    url = 'https://www.abebooks.com/servlet/SearchResults?isbn=' + isbn
-    print(url)
-    resp = requests.get(url)
-    found_isbn = False
-    if url == resp.url:
-        found_isbn = True
-    return found_isbn
 
 # Converting images to a different image format
 def convert_image_format(file, folder=None, dpi=(600,600), extension='.tiff'):
@@ -82,20 +60,15 @@ def create_local_temp_folder(folder=None):
 
 
 def create_csv(output_filename='output.csv', data_list=None):
-    'Create a csv with the ISBN and Image OCR results'
-    header = ['Image Name', 'Rotation', 'ISBN Number', 'Raw Data', 'Found Online']
+    # Create a csv with the ISBN and Image OCR results
+    header = ['Image Name', 'Rotation', 'ISBN Number', 'Raw Data', 'Found Online', 'URL']
     with open(output_filename, 'w', newline='') as csv_file:
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(header)
     csv_file.close()
 
-    with open(output_filename, 'a', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerows(data_list)
-    csv_file.close()
 
-
-def scan_image(file):
+def scan_image(file=None, csv=None):
     global custom_config
     global online
     global isbn_found
@@ -122,13 +95,14 @@ def scan_image(file):
     image = cv2.resize(image, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
     angle_list = [90, 180, 270, 360]
     try:
-
+        url = None
         # Cleaning up image before rotation
         gray = get_grayscale(image)
         # thresh_image = adaptiveThreshold(gray)
         # noise_removed = remove_noise(thresh_image)
 
         for index, angle in enumerate(angle_list):
+            print('angle is: ' + str(angle))
             rotate_image = rotate(image=gray, rotate_angle=angle)
             raw_data = pytesseract.image_to_string(rotate_image, config=custom_config)
             isbn_value = find_isbn(raw_data)
@@ -137,18 +111,18 @@ def scan_image(file):
                 # If you want to confirm that the isbn is found online
                 print(isbn_value)
                 if online:
-                    isbn_check = check_isbn(isbn_value)
-                found_angle = angle
-                isbn_found+=1
-                break
-            
-        row_list = [str(file), str(found_angle if found_angle else None), str(isbn_value), str(raw_data), str(isbn_check)]
+                    isbn_check, url = check_isbn(isbn_value)
+
+                if(isbn_check):
+                    isbn_found+=1
+                    found_angle = angle
+                    break
+
+        row_list = [str(file), str(found_angle if found_angle else None), str(isbn_value), str(raw_data), str(isbn_check), str(url)]
         print(row_list)
         return row_list
     except Exception as e:
         print("image: " + file + " Error: " + str(e))
-
-    print('-----------------------------------------')
 
 
 def main():
@@ -164,12 +138,12 @@ def main():
     parser.add_argument('-p', '--path', help='File or Folder Path', required=True)
     parser.add_argument('-c', '--config', help='Tesseract config commands (ex. --oem 3)', required=False)
     parser.add_argument('-o', '--online', help='Allow the scanner to check isbns online', action='store_true', required=False)
-    parser.add_argument('-v', '--csv', help='Exports a csv file from the results', required=False)
-    
+    parser.add_argument('-x', '--csv', help='Exports a csv file from the results', required=False)
+
     args = vars(parser.parse_args())
     path = args['path']
     custom_config = args['config'] if args['config'] else custom_config
-    csv_file = args['csv'] if args['csv'] else None
+    csv_name = args['csv'] if args['csv'] else None
 
     if isdir(path):  
         is_file = False
@@ -181,22 +155,32 @@ def main():
     if args['online']:
         online = True
     
-    if is_file:
-        scan_list.append(scan_image(path))
-        file_found+=1
-    else:
-        for files in listdir(path):
-            scan_list.append(scan_image(path + files))
-            file_found+=1
-    
-    print(csv_file)
-    print(scan_list)
+    start_time = time.perf_counter()
 
-    if csv_file:
-        create_csv(output_filename=csv_file, data_list=scan_list)
+    if csv_name: 
+        create_csv(output_filename=csv_name)
+        
+        with open(csv_name, 'a', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            
+            if is_file:
+                csv_writer.writerow(scan_image(path))
+                csv_file.flush()
+                file_found+=1
+            else:
+                for files in listdir(path):
+                    csv_writer.writerow(scan_image(path + files))
+                    csv_file.flush()
+                    file_found+=1
+        
+        csv_file.close()
+
+    end_time = time.perf_counter()
 
     print("Total files: " + str(file_found))
     print("Total ISBN to Files: " + str(isbn_found) + "/" + str(file_found))
+    print(f"Total time: {end_time - start_time:0.4f} seconds")
+
 
 if __name__ == "__main__":
     main()
