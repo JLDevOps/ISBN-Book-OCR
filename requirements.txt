@@ -16,7 +16,7 @@ mccabe==0.6.1
 networkx==2.4
 np==1.0.2
 numpy==1.18.0
-opencv-python==4.1.2.30
+opencv-python==4.2.0.32
 Pillow==6.2.1
 pylint==2.4.4
 pyparsing==2.4.6
